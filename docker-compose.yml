@@ -1,0 +1,14 @@
+services:
+  PostgreSQL:
+      image: postgres
+      ports:
+        - "5432:5432"
+      environment:
+        - POSTGRES_PASSWORD=123456
+        - POSTGRES_USER=user-access
+        - POSTGRES_DB=user-access
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
