@@ -17,5 +17,7 @@ func StartRouter() {
 	router.GET("/systems", controller.GetAllSystems)
 	router.GET("/systems/:systemId", controller.GetSystem)
 
+	router.POST("/user-systems", controller.AddUserToSystem)
+
 	router.Run("localhost:8080")
 }

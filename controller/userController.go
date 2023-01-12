@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 	"user-access/config"
 	"user-access/models"
@@ -18,6 +19,11 @@ type AddUser struct {
 	Number  int    `json:"number"`
 	Company string `json:"company"`
 	Team    string `json:"team"`
+}
+
+type SetUserToSystem struct {
+	UserId   int `json:"user_id"`
+	SystemId int `json:"system_id"`
 }
 
 func CreateUser(c *gin.Context) {
@@ -67,5 +73,33 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
+	c.JSON(http.StatusOK, &user)
+}
+
+func AddUserToSystem(c *gin.Context) {
+	body := SetUserToSystem{}
+
+	if err := c.BindJSON(&body); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	log.Printf("Search user id: %c\n, system_id: %c", body.UserId, body.SystemId)
+
+	var user models.User
+
+	if result := config.Database().Preload("Systems").Find(&user, body.UserId); result.Error != nil {
+		c.AbortWithError(http.StatusNotFound, result.Error)
+		return
+	}
+
+	var system models.System
+
+	if result := config.Database().Find(&system, body.SystemId); result.Error != nil {
+		c.AbortWithError(http.StatusNotFound, result.Error)
+		return
+	}
+
+	config.Database().Model(&user).Association("Systems").Append(&system)
 	c.JSON(http.StatusOK, &user)
 }
