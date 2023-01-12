@@ -1,19 +1,17 @@
 package models
 
-import (
-	"github.com/google/uuid"
-	"gorm.io/gorm"
-)
+import "gorm.io/gorm"
 
 type User struct {
-	ID      uuid.UUID `gorm:"primaryKey"`
-	Name    string    `json:"name"`
-	Email   string    `json:"email"`
-	Address string    `json:"address"`
-	Number  int       `json:"number"`
-}
-
-func (user *User) BeforeCreate(db *gorm.DB) (err error) {
-	user.ID = uuid.New()
-	return
+	gorm.Model
+	Name    string   `json:"name"`
+	Email   string   `json:"email"`
+	Address string   `json:"address"`
+	City    string   `json:"city"`
+	State   string   `json:"state"`
+	Country string   `json:"country"`
+	Number  int      `json:"number"`
+	Company string   `json:"company"`
+	Team    string   `json:"team"`
+	Systems []System `gorm:"many2many:user_systems;"`
 }
